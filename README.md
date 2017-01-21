@@ -1,1 +1,1 @@
-git clone https://github.com/feelfashion/feelfashion.github.io
+https://github.com/feelfashion/feelfashion.github.io
