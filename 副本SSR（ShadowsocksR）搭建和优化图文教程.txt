@@ -1,0 +1,311 @@
+SSR（ShadowsocksR）搭建和优化图文教程
+2016-07-30 16:21
+SSR（ShadowsocksR）是Shadowsocks的第三方版本，与原版的最大区别是增加了混淆协议，可以有效欺骗墙的流量特征匹配从而避免QOS限速。
+
+ShadowsocksR
+ShadowsocksR是breakwa11发起的shadowsocks分支，在shadowsocks的基础上增加了一些数据混淆方式，称修复了部分安全问题并可以提高QoS优先级。
+摘自： https://zh.wikipedia.org/wiki/Shadowsocks#ShadowsocksR
+
+温馨提示
+如果你的地区并没有QOS限速，使用SSR的速度可能会比Shadowsocks原版会更慢。不过对于QOS限速这种情况可能大部分地区都是存在的了，因为墙无法搞定Shadowsocks的协议，那么就做流量特征检测，然后干扰你，常见的，间歇性连接失败，或一开始使用Shadowsocks速度很快之后速度便慢了下来，或同一端口使用一些时间之后速度变得很慢甚至无法连接，换端口正常。等等…这种情况就是被墙干扰了，那么使用SSR或许可以能避免。
+
+ShadowsocksR 项目原作者已停止更新
+原版Shadowsocks搭建教程：Shadowsocks搭建和优化图文教程
+
+准备
+一个SSH远程管理软件，使用Xshell，官网下载： https://www.netsarang.com/download/
+Xshell是付费软件，但是家庭用户和学校用户可以免费申请使用，打开上面的链接之后，填写下申请表，License type 选择 Home And School use，First Name 和Last Name 可以随便写，Company 不需要写，Email 务必填写自己的邮箱！之后点击 Submit，申请后 netsarang 会根据邮箱给你发送下载链接。
+收到邮件后点击链接下载安装便是。
+
+购买VPS
+如果你已经有VPS，请：跳过这部分
+选择合适的VPS套餐，VPS套餐来自：搬瓦工（Bandwagon Host）
+
+香港优化线路，推荐
+
+CPU	内存	硬盘	流量	价格	链接
+1 核	1024 MB	20 GB	100GB / 月	9.99美元 / 月	购买
+1 核	2048 MB	40 GB	200GB / 月	19.99美元 / 月	购买
+1 核	4096 MB	80 GB	300GB / 月	39.99美元 / 月	购买
+2 核	8192 MB	160 GB	500GB / 月	79.99美元 / 月	购买
+4 核	16384 MB	320 GB	1000GB / 月	159.99美元 / 月	购买
+CN2 优化线路
+
+CPU	内存	硬盘	流量	价格	链接
+1 核	512 MB	10 GB	500GB / 月	29.99美元 / 年	购买
+1 核	1024 MB	20 GB	1000GB / 月	5.99美元 / 月	购买
+1 核	2048 MB	40 GB	2000GB / 月	9.99美元 / 月	购买
+2 核	4096 MB	80 GB	3000GB / 月	19.99美元 / 月	购买
+2 核	8 GB	160 GB	5000GB / 月	39.99美元 / 月	购买
+3 核	16 GB	160 GB	8000GB / 月	79.99美元 / 月	购买
+普通优化线路
+
+CPU	内存	硬盘	流量	价格	链接
+1 核	512 MB	10 GB	1000GB / 月	29.99美元 / 年	购买
+1 核	1024 MB	20 GB	2000GB / 月	39.99美元 / 年	购买
+其他
+
+CPU	内存	硬盘	流量	价格	链接
+1 核	512 MB	10 GB	500GB / 月	19.99美元 / 年	购买
+2 核	1024 MB	20 GB	1 TB / 月	4.99美元 / 月	购买
+3 核	2 GB	40 GB	2 TB / 月	9.99美元 / 月	购买
+4 核	4 GB	80 GB	3 TB / 月	19.99美元 / 月	购买
+5 核	8 GB	160 GB	4 TB / 月	39.99美元 / 月	购买
+6 核	16 GB	320 GB	5 TB / 月	79.99美元 / 月	购买
+选择哪个套餐？
+一般来说，推荐购买香港优化线路 或 CN2 优化线路，或者哪个便宜选择那个，说着当然如果你使用量比较多或者想要分享给同学和朋友一起用的话，选择合适的套餐即可。又或者你土豪的话，选择最贵的也行。
+
+香港优化线路的VPS的速度最快。但价格贵，流量也少……
+注意，记住一分钱一分货。
+
+如果出现 out of stock 这样的提示，那就是这个套餐卖完了，选择其他套餐即可。
+
+购买
+在上面表格中选择想要购买的套餐，然后点击购买即可。
+将套餐添加到购物车
+
+Add to Cart
+说明一下，在Billing Cycle选项那里选择：$xxxx USD Annually，按年付的意思
+推荐按年付，比按月付最高可省55%的钱
+Location 选择: HK - Hong Kong xxxxx （如果你购买的是香港线路的话）
+否则选择: US - Los Angeles xxxxx
+然后点击Add To Cart
+
+结算
+点击Checkout
+
+Checkout
+然后会提示你注册账号
+请按照下面图片提示来填写~
+
+Checkout now
+要注意的是，Country选项记得选择China，Payment Method选择Alipay
+不要忘了勾上 I have read and agree to the Terms of Service
+然后Complete Order
+
+付款
+点击Pay now
+之后便会跳转到支付宝付款界面，完成付款即可
+
+Pay now
+获取VPS信息
+确保你已经成功付款之后
+打开： https://bwh1.net/clientarea.php?action=products
+选择KiwiVM Control Panel
+这是首次登录的界面，稍等一会，等待资源分配即可。
+
+Task in progress
+等待两三分钟，刷新一下。
+这是已经在运行的界面，请记下IP address然后点击stop
+
+停止VPS
+当出现：Great Success!Virtual server will stop in a few seconds.
+证明VPS已经停止了，我们需要重装一个系统。点击左边的Install new OS
+之后选择centos-7-x86_64-bbr
+再勾上：I agree that all existing data on my VPS will be lost.
+然后点击Reload
+
+Install new OS
+在此，我说明一下，BBR是谷歌开发的对于TCP加速的工具，和锐速加速也相差不大，但是锐速早已停止了免费用户，虽然网上锐速的破解版本也满天飞，但出于对版权的原因，所以选择使用BBR加速，又刚好看到搬瓦工的系统镜像已经有自带BBR，然后就直接省掉安装BBR的步骤了咯^_^..
+另外说一下，对于Shadowsocks的优化，目前来说，常见的有：
+TCP/UDP：中转路线
+TCP：BBR，锐速，
+UDP：Kcptun，FinalSpeed
+一般情况下，推荐使用BBR，我爱大谷歌（捂脸）。
+好了教程继续。
+当点击Reload之后，稍等片刻将会出现下图所示的界面，
+请务必记下： You will need a new root password to access your VPS：xxxx
+还有：New SSH Port:
+一个是root密码，一个是SSH端口，
+例如我的root密码是：xM529uLLeeTB，SSH端口是：26654
+
+Reload
+OK，这时我们已经获取到VPS的信息了。
+
+登录VPS
+打开Xshell 5，新建一个会话。
+主机写上你的VPS IP地址，端口写上SSH端口。
+
+new
+之后点击 用户身份验证，用户名：root，密码：你的root 密码。然后点击确定
+
+user-and-passwd
+之后选择连接。
+
+连接
+然后会提示SSH安全警告，选择，接受并保存。
+
+SSH 安全警告
+这是登录成功后的界面
+
+登陆成功
+OK，搞定了登录那么就可以开始安装 ShadowsocksR 了。
+
+准备安装ShadowsocksR
+提示：你可以复制命令，然后在Xshell 5界面按一下鼠标滚轮键或者按Shift+Insert即可粘贴，不能按Ctrl+V的。。。
+先安装wget，输入：yum install wget -y，回车，等待出现Complete!即可。
+（安装wget这个因系统而异的，由于搬瓦工的系统木有集成所以需要安装）
+之后，输入下面的命令并回车，一条一条来。
+
+wget --no-check-certificate -O shadowsocksR.sh https://git.io/vHRHi
+chmod +x shadowsocksR.sh
+./shadowsocksR.sh 2>&1 | tee shadowsocksR.log
+
+ 
+开始安装ShadowsocksR
+当你执行完了上面的命令时就会出现如下图片显示的界面的
+第一个叫你输入ShadowsocksR连接密码，如不输入，密码默认为：teddysun.com
+第二个叫你输入ShadowsocksR连接端口，个人使用推荐使用443端口，如不输入，端口默认为：8989
+
+安装 ShadowsocksR
+使用 chacha20-ietf 加密算法
+第三个叫你选择加密算法，推荐使用 chacha20-ietf 加密算法，所以输入：11
+
+使用 chacha20-ietf 加密算法
+协议和混淆
+第四个叫你选择协议，推荐 auth_aes128_md5 ，所以输入：5
+第五个叫你选择混淆，推荐 tls1.2_ticket_auth，所以输入：6
+然后按任何键开始安装Shadowsocks，比如按回车键，按Ctrl+C可中止安装。
+
+协议和混淆
+ShadowsocksR安装完成
+当出现下图所示证明ShadowsocksR已经安装完成，你可以尝试使用客户端去连接一下是否可用了。
+
+ShadowsocksR安装完成
+优化 ShadowsocksR 速度
+接下来优化一下ShadowsocksR的速度。
+注意，由于搬瓦工VPS的系统镜像已经集成 BBR 优化。如果你使用其他的VPS，应该自行使用BBR或者锐速等方式去优化。
+
+ulimit优化
+输入下面的命令并回车。（加大ulimit数值并加入开机启动）
+
+ulimit -n 51200 && echo ulimit -n 51200 >> /etc/rc.local
+limits优化
+输入下面的命令并回车，一条一条来。
+
+echo "* soft nofile 51200" >> /etc/security/limits.conf
+echo "* hard nofile 51200" >> /etc/security/limits.conf
+sysctl优化
+输入vi /etc/sysctl.conf回车
+之后按 i 键或者按 Insert 键开始修改
+在后面增加：
+
+fs.file-max = 51200
+
+net.core.rmem_max = 67108864
+net.core.wmem_max = 67108864
+net.core.netdev_max_backlog = 250000
+net.core.somaxconn = 4096
+
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.tcp_tw_recycle = 0
+net.ipv4.tcp_fin_timeout = 30
+net.ipv4.tcp_keepalive_time = 1200
+net.ipv4.ip_local_port_range = 10000 65000
+net.ipv4.tcp_max_syn_backlog = 8192
+net.ipv4.tcp_max_tw_buckets = 5000
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_fastopen = 3
+net.ipv4.tcp_rmem = 4096 87380 67108864
+net.ipv4.tcp_wmem = 4096 65536 67108864
+net.ipv4.tcp_mtu_probing = 1
+修改结束之后按一下 ESC 键输入 :wq 再按一下回车，保存退出，如下图片所示。
+说明一下，如果你修改错了，想要重新来过，按一下 ESC 键输入 :q! ，再按一下回车，就会退出了。
+再说明一下:wq，这个是一个冒号和wq，冒号啊，也就是键盘上 L 键右边那个键，务必为英语输入状态下
+
+sysctl 优化
+再然后输入：sysctl -p回车
+
+使用chacha20加密算法
+在 开始安装ShadowsocksR 的时候已经选择 chacha20-ietf 加密算法。一般来说，使用 chacha20-ietf 加密算法即可。不使用 chacha20 。在此，故不再做修改。
+
+使用微林加速ShadowsocksR
+如果你用了上面的优化加速方案感觉自己搭建的ShadowsocksR还是慢慢的，那么可以尝试这个是否有效果！
+你是否听过某些提供ShadowsocksR服务的说XXX中转线路，全天YouTube高清没压力……等等，和微林加速也是一样的性质的
+注册账号： https://vnet.link/reg
+注意，貌似木有新用户木有免费送试用流量，所以可能需要充值才能使用。
+只要是使用vxtrans，教程参考官方说明吧。
+
+ShadowsocksR如何修改端口和密码
+输入vi /etc/shadowsocks.json回车，之后按 i 键或者按 Insert 键开始修改，下面是配置示范
+
+{
+    "server":"0.0.0.0",
+    "server_ipv6":"::",
+    "server_port":6666,
+    "local_address":"127.0.0.1",
+    "local_port":1080,
+    "password":"hello",
+    "timeout":120,
+    "method":"chacha20-ietf",
+    "protocol":"auth_aes128_md5",
+    "protocol_param":"",
+    "obfs":"tls1.2_ticket_auth",
+    "obfs_param":"",
+    "redirect":"",
+    "dns_ipv6":false,
+    "fast_open":false,
+    "workers":1
+}
+
+如上面的配置，端口是6666，密码是hello。
+修改端口就是更改server_port的值。
+修改密码就是更改password的值。
+修改结束之后按一下 ESC 键输入 :wq 再按一下回车，保存退出
+之后输入：/etc/init.d/shadowsocks restart回车
+
+ShadowsocksR如何开启多用户
+输入vi /etc/shadowsocks.json回车，之后按 i 键或者按 Insert 键开始修改，下面是配置示范。
+
+{
+    "server":"0.0.0.0",
+    "server_ipv6":"::",
+    "local_address":"127.0.0.1",
+    "local_port":1080,
+    "port_password":{
+         "443":"password0",
+         "444":"password1"
+    },
+    "timeout":120,
+    "method":"chacha20-ietf",
+    "protocol":"auth_aes128_md5",
+    "protocol_param":"",
+    "obfs":"tls1.2_ticket_auth",
+    "obfs_param":"",
+    "redirect":"",
+    "dns_ipv6":false,
+    "fast_open":false,
+    "workers":1
+}
+其实就是删除了server_port和password，之后增加一个port_password
+写法就是 json 文件格式的写法。
+如上面配置，开启了443端口密码是password0，开启了444端口密码是password1。
+修改结束之后按一下 ESC 键输入 :wq 再按一下回车，保存退出
+之后输入：/etc/init.d/shadowsocks restart回车
+
+卸载
+如果你需要卸载ShadowsocksR。
+使用命令：./shadowsocksR.sh uninstall，然后输入 y 即可。
+
+更新或重新安装
+如果你需要更新Shadowsocks服务器端，或者需要重新安装Shadowsocks服务器端。
+先卸载，使用命令：./shadowsocksR.sh uninstall，然后输入 y 即可。
+之后输入命令：./shadowsocksR.sh 2>&1 | tee shadowsocksR.log
+
+结束。
+一键安装脚本来自： https://shadowsocks.be/9.html
+呼呼~终于写好了。希望对你有帮助吧。
+
+备注
+此教程只是教会你怎么快速搭建自己的SSR，并且只是适合那些新手的小朋友们。SSR官方文档说明不推荐使用一键安装脚本，但是我想，对于新手的小朋友们，怎么去购买VPS和怎么使用SSH登录VPS就已经足够头痛了，没有哪个孩子生下来就会跑。
+
+分享
+如果这篇文章对你帮助的话，记得分享给你的小伙伴们哦。
+
+提示
+由于使用了 chacha20-ietf 加密算法，如果你的客户端没有这个加密算法选择的话，那么你就应该更新 ShadowsocksR 客户端啦。
+最新 Win 版本： https://github.com/shadowsocksr-rm/shadowsocksr-csharp/releases
+
+其他
+请勿违反国家法律法规，否则后果自负！
+由于已经多次对文章内容修正和更新，你的实际操作可能会和截图有少许不同，但不会影响你对这个教程的理解。
