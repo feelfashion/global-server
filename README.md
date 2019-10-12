@@ -11,9 +11,7 @@ https://github.com/XX-net/xxnet-android/releases/download/3.0.0/XX-Net-3.0-debug
 目前python加载速度有点慢，所以打开界面要点刷新才能看到，后面再想办法解决。
 
 梅林离线安装科学上网(SSR)插件
-
-https://raw.githubusercontent.com/feelfashion/global-server/master/shadowsocks_
-
+https://raw.githubusercontent.com/feelfashion/global-server/master/shadowsocks_4.1.3.tar.gz
 
 
 
