@@ -1,5 +1,3 @@
-XX-NET-3.0
-https://github.com/XX-net/xxnet-android/releases/download/3.0.0/XX-Net-3.0-debug.apk
 
 梅林离线安装科学上网(SSR)插件
 https://raw.githubusercontent.com/feelfashion/global-server/master/shadowsocks_4.1.3.tar.gz
